@@ -1,0 +1,310 @@
+{
+  "games": [
+    {
+      "gameId": "WC2026_001",
+      "teams": ["Brazil", "Argentina"],
+      "date": "2026-06-15T20:00:00Z",
+      "venue": "Lusail Stadium",
+      "spread": {
+        "Brazil": "-0.5",
+        "Argentina": "+0.5"
+      },
+      "moneyline": {
+        "Brazil": "+150",
+        "Argentina": "-120",
+        "Draw": "+220"
+      },
+      "total": {
+        "over": "2.5",
+        "under": "2.5"
+      },
+      "status": "upcoming",
+      "group": "Group A",
+      "stadium": "Lusail Stadium",
+      "capacity": 88966,
+      "city": "Lusail"
+    },
+    {
+      "gameId": "WC2026_002",
+      "teams": ["France", "Germany"],
+      "date": "2026-06-16T18:00:00Z",
+      "venue": "MetLife Stadium",
+      "spread": {
+        "France": "-0.5",
+        "Germany": "+0.5"
+      },
+      "moneyline": {
+        "France": "+130",
+        "Germany": "+180",
+        "Draw": "+200"
+      },
+      "total": {
+        "over": "2.5",
+        "under": "2.5"
+      },
+      "status": "upcoming",
+      "group": "Group B",
+      "stadium": "MetLife Stadium",
+      "capacity": 82500,
+      "city": "East Rutherford"
+    },
+    {
+      "gameId": "WC2026_003",
+      "teams": ["England", "Spain"],
+      "date": "2026-06-17T15:00:00Z",
+      "venue": "SoFi Stadium",
+      "spread": {
+        "England": "0",
+        "Spain": "0"
+      },
+      "moneyline": {
+        "England": "+160",
+        "Spain": "+160",
+        "Draw": "+200"
+      },
+      "total": {
+        "over": "2.5",
+        "under": "2.5"
+      },
+      "status": "upcoming",
+      "group": "Group C",
+      "stadium": "SoFi Stadium",
+      "capacity": 70240,
+      "city": "Inglewood"
+    },
+    {
+      "gameId": "WC2026_004",
+      "teams": ["Portugal", "Netherlands"],
+      "date": "2026-06-18T20:00:00Z",
+      "venue": "AT&T Stadium",
+      "spread": {
+        "Portugal": "-0.5",
+        "Netherlands": "+0.5"
+      },
+      "moneyline": {
+        "Portugal": "+140",
+        "Netherlands": "+170",
+        "Draw": "+210"
+      },
+      "total": {
+        "over": "2.5",
+        "under": "2.5"
+      },
+      "status": "upcoming",
+      "group": "Group D",
+      "stadium": "AT&T Stadium",
+      "capacity": 80000,
+      "city": "Arlington"
+    },
+    {
+      "gameId": "WC2026_005",
+      "teams": ["Belgium", "Italy"],
+      "date": "2026-06-19T18:00:00Z",
+      "venue": "Mercedes-Benz Stadium",
+      "spread": {
+        "Belgium": "0",
+        "Italy": "0"
+      },
+      "moneyline": {
+        "Belgium": "+150",
+        "Italy": "+150",
+        "Draw": "+200"
+      },
+      "total": {
+        "over": "2.5",
+        "under": "2.5"
+      },
+      "status": "upcoming",
+      "group": "Group E",
+      "stadium": "Mercedes-Benz Stadium",
+      "capacity": 71000,
+      "city": "Atlanta"
+    },
+    {
+      "gameId": "WC2026_006",
+      "teams": ["Croatia", "Morocco"],
+      "date": "2026-06-20T15:00:00Z",
+      "venue": "Arrowhead Stadium",
+      "spread": {
+        "Croatia": "-0.5",
+        "Morocco": "+0.5"
+      },
+      "moneyline": {
+        "Croatia": "+140",
+        "Morocco": "+180",
+        "Draw": "+200"
+      },
+      "total": {
+        "over": "2.5",
+        "under": "2.5"
+      },
+      "status": "upcoming",
+      "group": "Group F",
+      "stadium": "Arrowhead Stadium",
+      "capacity": 76416,
+      "city": "Kansas City"
+    },
+    {
+      "gameId": "WC2026_007",
+      "teams": ["Uruguay", "Colombia"],
+      "date": "2026-06-21T20:00:00Z",
+      "venue": "Hard Rock Stadium",
+      "spread": {
+        "Uruguay": "0",
+        "Colombia": "0"
+      },
+      "moneyline": {
+        "Uruguay": "+160",
+        "Colombia": "+160",
+        "Draw": "+200"
+      },
+      "total": {
+        "over": "2.5",
+        "under": "2.5"
+      },
+      "status": "upcoming",
+      "group": "Group G",
+      "stadium": "Hard Rock Stadium",
+      "capacity": 65326,
+      "city": "Miami Gardens"
+    },
+    {
+      "gameId": "WC2026_008",
+      "teams": ["Senegal", "Japan"],
+      "date": "2026-06-22T18:00:00Z",
+      "venue": "CenturyLink Field",
+      "spread": {
+        "Senegal": "-0.5",
+        "Japan": "+0.5"
+      },
+      "moneyline": {
+        "Senegal": "+150",
+        "Japan": "+170",
+        "Draw": "+200"
+      },
+      "total": {
+        "over": "2.5",
+        "under": "2.5"
+      },
+      "status": "upcoming",
+      "group": "Group H",
+      "stadium": "CenturyLink Field",
+      "capacity": 69000,
+      "city": "Seattle"
+    }
+  ],
+  "teams": [
+    {
+      "name": "Brazil",
+      "flag": "🇧🇷",
+      "fifaRank": 1,
+      "group": "A",
+      "odds": "+600"
+    },
+    {
+      "name": "Argentina",
+      "flag": "🇦🇷",
+      "fifaRank": 2,
+      "group": "A",
+      "odds": "+700"
+    },
+    {
+      "name": "France",
+      "flag": "🇫🇷",
+      "fifaRank": 3,
+      "group": "B",
+      "odds": "+800"
+    },
+    {
+      "name": "Germany",
+      "flag": "🇩🇪",
+      "fifaRank": 4,
+      "group": "B",
+      "odds": "+900"
+    },
+    {
+      "name": "England",
+      "flag": "🇬🇧",
+      "fifaRank": 5,
+      "group": "C",
+      "odds": "+1000"
+    },
+    {
+      "name": "Spain",
+      "flag": "🇪🇸",
+      "fifaRank": 6,
+      "group": "C",
+      "odds": "+1100"
+    },
+    {
+      "name": "Portugal",
+      "flag": "🇵🇹",
+      "fifaRank": 7,
+      "group": "D",
+      "odds": "+1200"
+    },
+    {
+      "name": "Netherlands",
+      "flag": "🇳🇱",
+      "fifaRank": 8,
+      "group": "D",
+      "odds": "+1300"
+    },
+    {
+      "name": "Belgium",
+      "flag": "🇧🇪",
+      "fifaRank": 9,
+      "group": "E",
+      "odds": "+1400"
+    },
+    {
+      "name": "Italy",
+      "flag": "🇮🇹",
+      "fifaRank": 10,
+      "group": "E",
+      "odds": "+1500"
+    },
+    {
+      "name": "Croatia",
+      "flag": "🇭🇷",
+      "fifaRank": 11,
+      "group": "F",
+      "odds": "+1600"
+    },
+    {
+      "name": "Morocco",
+      "flag": "🇲🇦",
+      "fifaRank": 12,
+      "group": "F",
+      "odds": "+1700"
+    },
+    {
+      "name": "Uruguay",
+      "flag": "🇺🇾",
+      "fifaRank": 13,
+      "group": "G",
+      "odds": "+1800"
+    },
+    {
+      "name": "Colombia",
+      "flag": "🇨🇴",
+      "fifaRank": 14,
+      "group": "G",
+      "odds": "+1900"
+    },
+    {
+      "name": "Senegal",
+      "flag": "🇸🇳",
+      "fifaRank": 15,
+      "group": "H",
+      "odds": "+2000"
+    },
+    {
+      "name": "Japan",
+      "flag": "🇯🇵",
+      "fifaRank": 16,
+      "group": "H",
+      "odds": "+2100"
+    }
+  ]
+} 
