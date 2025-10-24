@@ -47,7 +47,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     loadDashboardData()
-  }, [])
+  }, [user])
 
   const loadDashboardData = async () => {
     setIsLoading(true)
@@ -67,16 +67,52 @@ const Dashboard = () => {
   }
 
   const loadStats = async () => {
-    // Mock data - replace with actual API call
-    setStats({
-      totalBets: 47,
-      wins: 28,
-      losses: 19,
-      totalWagered: 1250.50,
-      totalWon: 1890.75,
-      winRate: 59.6,
-      roi: 51.2
-    })
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      
+      // Fetch real data from analytics API
+      const response = await fetch('/api/analytics/overview', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch stats');
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.data.overview) {
+        const overview = result.data.overview;
+        
+        // Update state with REAL data from backend
+        setStats({
+          totalBets: overview.totalBets || 0,
+          wins: Math.floor((overview.totalBets || 0) * (overview.winRate || 0) / 100),
+          losses: (overview.totalBets || 0) - Math.floor((overview.totalBets || 0) * (overview.winRate || 0) / 100),
+          totalWagered: overview.totalWagered || 0,
+          totalWon: overview.totalWon || 0,
+          winRate: overview.winRate || 0,
+          roi: overview.roi || 0
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      toast.error('Failed to load statistics');
+      
+      // Fallback to zero values if API fails
+      setStats({
+        totalBets: 0,
+        wins: 0,
+        losses: 0,
+        totalWagered: 0,
+        totalWon: 0,
+        winRate: 0,
+        roi: 0
+      });
+    }
   }
 
   const loadRecentBets = async () => {

@@ -32,13 +32,41 @@ const PlaceBet = () => {
     setSelectedBet({ selection, odds })
   }
 
-  const handlePlaceBet = () => {
+  const handlePlaceBet = async () => {
     if (!selectedBet || !betAmount) {
       toast.error('Please select a bet and enter amount')
       return
     }
-    toast.success('Bet placed successfully! 🎉')
-    setLocation('/dashboard')
+    
+    try {
+      // Make actual API call to place bet
+      const response = await fetch('/api/bets/place', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          gameId: game.id,
+          betType: selectedBet.selection,
+          selection: selectedBet.selection,
+          odds: selectedBet.odds,
+          amount: parseFloat(betAmount)
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to place bet');
+      }
+      
+      toast.success('Bet placed successfully! 🎉')
+      
+      // Navigate to dashboard
+      // Dashboard will auto-refresh due to useEffect dependency on [user]
+      setLocation('/dashboard')
+    } catch (error) {
+      toast.error('Failed to place bet: ' + error.message)
+    }
   }
 
   if (isLoading) {

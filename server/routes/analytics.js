@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const UserBets = require('../models/UserBets');
 
 // In-memory storage for analytics data
 const analyticsData = new Map();
@@ -7,53 +8,56 @@ const analyticsData = new Map();
 // Get user analytics overview
 router.get('/overview', async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { timeframe = '30d' } = req.query;
+    const userId = req.user._id || req.user.id;
+    
+    // Query actual user bets from database
+    const userBets = await UserBets.find({ userId: userId });
+    
+    // Calculate REAL statistics
+    const totalBets = userBets.length;
+    
+    const totalWagered = userBets.reduce((sum, bet) => {
+      return sum + (parseFloat(bet.stake) || parseFloat(bet.amount) || 0);
+    }, 0);
+    
+    const wonBets = userBets.filter(bet => 
+      bet.betStatus === 'won' || bet.isWon === true
+    );
+    const lostBets = userBets.filter(bet => 
+      bet.betStatus === 'lost' || (bet.isSettled && !bet.isWon)
+    );
+    
+    const wins = wonBets.length;
+    const losses = lostBets.length;
+    
+    const totalWon = wonBets.reduce((sum, bet) => {
+      return sum + (parseFloat(bet.payoutAmount) || parseFloat(bet.payout) || 0);
+    }, 0);
+    
+    const settledBets = wins + losses;
+    const winRate = settledBets > 0 ? (wins / settledBets * 100) : 0;
+    
+    const netProfit = totalWon - totalWagered;
+    const roi = totalWagered > 0 ? (netProfit / totalWagered * 100) : 0;
 
-    // Mock analytics data
     const overview = {
-      totalBets: 45,
-      totalWagered: 1250.50,
-      totalWon: 1875.25,
-      totalLost: 750.00,
-      netProfit: 1125.25,
-      winRate: 68.9,
-      roi: 90.0,
-      averageBetSize: 27.8,
-      bestBetType: 'moneyline',
-      mostProfitableTeam: 'Brazil',
-      streak: {
-        current: 4,
-        longest: 7,
-        type: 'win'
-      },
-      recentPerformance: {
-        last7Days: {
-          bets: 8,
-          wins: 6,
-          winRate: 75.0,
-          profit: 245.50
-        },
-        last30Days: {
-          bets: 32,
-          wins: 22,
-          winRate: 68.8,
-          profit: 890.25
-        }
-      }
+      totalBets: totalBets,
+      totalWagered: parseFloat(totalWagered.toFixed(2)),
+      totalWon: parseFloat(totalWon.toFixed(2)),
+      netProfit: parseFloat(netProfit.toFixed(2)),
+      winRate: parseFloat(winRate.toFixed(1)),
+      roi: parseFloat(roi.toFixed(1))
     };
 
     res.json({
       success: true,
-      data: {
-        overview: overview
-      }
+      data: { overview: overview }
     });
-
   } catch (error) {
+    console.error('Analytics error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching analytics overview',
+      message: 'Error fetching analytics',
       error: error.message,
     });
   }
