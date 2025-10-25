@@ -141,8 +141,87 @@ function getRiskLevel(betType) {
   return riskLevels[betType] || 'medium';
 }
 
-// Load data on startup
-loadData();
+// Load data asynchronously on startup
+(async () => {
+  await loadData();
+  console.log('Predictions service initialized');
+  console.log('Predictions data loaded:', predictionsData?.length || 0);
+})();
+
+// GET /api/predictions/stats - Get prediction statistics
+router.get('/stats', async (req, res) => {
+  try {
+    if (!predictionsData) {
+      await loadData();
+    }
+    
+    const stats = {
+      totalPredictions: predictionsData.length,
+      averageConfidence: (predictionsData.reduce((sum, p) => sum + p.confidence, 0) / predictionsData.length).toFixed(1),
+      averageEdge: (predictionsData.reduce((sum, p) => sum + parseFloat(p.edge), 0) / predictionsData.length).toFixed(1),
+      betTypeDistribution: predictionsData.reduce((acc, p) => {
+        acc[p.betType] = (acc[p.betType] || 0) + 1;
+        return acc;
+      }, {}),
+      riskLevelDistribution: predictionsData.reduce((acc, p) => {
+        acc[p.riskLevel] = (acc[p.riskLevel] || 0) + 1;
+        return acc;
+      }, {}),
+      confidenceDistribution: predictionsData.reduce((acc, p) => {
+        acc[p.confidence] = (acc[p.confidence] || 0) + 1;
+        return acc;
+      }, {})
+    };
+    
+    res.json({
+      success: true,
+      data: stats
+    });
+  } catch (error) {
+    console.error('Error fetching prediction stats:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch prediction stats',
+      error: error.message
+    });
+  }
+});
+
+// GET /api/predictions/top - Get top predictions by confidence
+router.get('/top', async (req, res) => {
+  try {
+    if (!predictionsData) {
+      await loadData();
+    }
+    
+    const { limit = 5, minConfidence = 8 } = req.query;
+    
+    const topPredictions = predictionsData
+      .filter(p => p.confidence >= parseInt(minConfidence))
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, parseInt(limit))
+      .map(prediction => {
+        const game = gamesData.games.find(g => g.gameId === prediction.gameId);
+        return {
+          ...prediction,
+          game
+        };
+      });
+    
+    res.json({
+      success: true,
+      data: topPredictions,
+      count: topPredictions.length
+    });
+  } catch (error) {
+    console.error('Error fetching top predictions:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch top predictions',
+      error: error.message
+    });
+  }
+});
 
 // GET /api/predictions - Get all AI predictions
 router.get('/', async (req, res) => {
@@ -248,42 +327,6 @@ router.get('/:gameId', async (req, res) => {
   }
 });
 
-// GET /api/predictions/top - Get top predictions by confidence
-router.get('/top', async (req, res) => {
-  try {
-    if (!predictionsData) {
-      await loadData();
-    }
-    
-    const { limit = 5, minConfidence = 8 } = req.query;
-    
-    const topPredictions = predictionsData
-      .filter(p => p.confidence >= parseInt(minConfidence))
-      .sort((a, b) => b.confidence - a.confidence)
-      .slice(0, parseInt(limit))
-      .map(prediction => {
-        const game = gamesData.games.find(g => g.gameId === prediction.gameId);
-        return {
-          ...prediction,
-          game
-        };
-      });
-    
-    res.json({
-      success: true,
-      data: topPredictions,
-      count: topPredictions.length
-    });
-  } catch (error) {
-    console.error('Error fetching top predictions:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch top predictions',
-      error: error.message
-    });
-  }
-});
-
 // POST /api/predictions/regenerate - Regenerate all predictions
 router.post('/regenerate', async (req, res) => {
   try {
@@ -307,45 +350,6 @@ router.post('/regenerate', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to regenerate predictions',
-      error: error.message
-    });
-  }
-});
-
-// GET /api/predictions/stats - Get prediction statistics
-router.get('/stats', async (req, res) => {
-  try {
-    if (!predictionsData) {
-      await loadData();
-    }
-    
-    const stats = {
-      totalPredictions: predictionsData.length,
-      averageConfidence: (predictionsData.reduce((sum, p) => sum + p.confidence, 0) / predictionsData.length).toFixed(1),
-      averageEdge: (predictionsData.reduce((sum, p) => sum + parseFloat(p.edge), 0) / predictionsData.length).toFixed(1),
-      betTypeDistribution: predictionsData.reduce((acc, p) => {
-        acc[p.betType] = (acc[p.betType] || 0) + 1;
-        return acc;
-      }, {}),
-      riskLevelDistribution: predictionsData.reduce((acc, p) => {
-        acc[p.riskLevel] = (acc[p.riskLevel] || 0) + 1;
-        return acc;
-      }, {}),
-      confidenceDistribution: predictionsData.reduce((acc, p) => {
-        acc[p.confidence] = (acc[p.confidence] || 0) + 1;
-        return acc;
-      }, {})
-    };
-    
-    res.json({
-      success: true,
-      data: stats
-    });
-  } catch (error) {
-    console.error('Error fetching prediction stats:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch prediction stats',
       error: error.message
     });
   }

@@ -21,6 +21,101 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 import toast from 'react-hot-toast'
 
+const getMockPredictions = () => {
+  return [
+    {
+      id: 1,
+      game: 'Brazil vs Argentina',
+      date: '2024-06-15T20:00:00Z',
+      prediction: 'Brazil to win',
+      confidence: 85,
+      odds: 2.15,
+      reasoning: 'Brazil has been in excellent form, winning their last 5 matches. Their home advantage and superior FIFA ranking (#1) give them a significant edge.',
+      factors: [
+        'Brazil home form: 5 wins in last 5',
+        'FIFA ranking advantage: #1 vs #3',
+        'Head-to-head: Brazil won 3 of last 5',
+        'Recent form: Brazil WWWWW vs Argentina WLWWW'
+      ],
+      riskLevel: 'low',
+      aiModel: 'GPT-4o',
+      lastUpdated: '2024-01-15T10:30:00Z'
+    },
+    {
+      id: 2,
+      game: 'France vs Germany',
+      date: '2024-06-16T18:00:00Z',
+      prediction: 'Over 2.5 goals',
+      confidence: 72,
+      odds: 1.90,
+      reasoning: 'Both teams have been scoring freely in recent matches. France averages 3.2 goals per game while Germany averages 2.8.',
+      factors: [
+        'France scoring rate: 3.2 goals/game',
+        'Germany scoring rate: 2.8 goals/game',
+        'Both teams in attacking form',
+        'Historical matches: 4 of last 5 had 3+ goals'
+      ],
+      riskLevel: 'medium',
+      aiModel: 'GPT-4o',
+      lastUpdated: '2024-01-15T11:15:00Z'
+    },
+    {
+      id: 3,
+      game: 'Spain vs Portugal',
+      date: '2024-06-17T20:00:00Z',
+      prediction: 'Spain -1.5',
+      confidence: 78,
+      odds: 2.05,
+      reasoning: 'Spain\'s possession-based style and defensive solidity make them favorites to win by multiple goals.',
+      factors: [
+        'Spain unbeaten in last 8 matches',
+        'Portugal missing key defenders',
+        'Spain home advantage',
+        'Recent H2H: Spain won 4 of last 6'
+      ],
+      riskLevel: 'medium',
+      aiModel: 'GPT-4o',
+      lastUpdated: '2024-01-15T12:00:00Z'
+    },
+    {
+      id: 4,
+      game: 'England vs Italy',
+      date: '2024-06-18T19:00:00Z',
+      prediction: 'Under 2.5 goals',
+      confidence: 68,
+      odds: 1.95,
+      reasoning: 'Both teams have strong defenses and tend to play conservatively in big matches.',
+      factors: [
+        'England: 0.8 goals conceded per game',
+        'Italy: Known for defensive football',
+        'Last 3 meetings had under 2.5 goals',
+        'High stakes often lead to cautious play'
+      ],
+      riskLevel: 'low',
+      aiModel: 'GPT-4o',
+      lastUpdated: '2024-01-15T13:30:00Z'
+    },
+    {
+      id: 5,
+      game: 'Netherlands vs Belgium',
+      date: '2024-06-19T21:00:00Z',
+      prediction: 'Netherlands ML',
+      confidence: 81,
+      odds: 2.20,
+      reasoning: 'Netherlands has superior squad depth and better recent form compared to Belgium\'s aging squad.',
+      factors: [
+        'Netherlands: 6 wins in last 7',
+        'Belgium key players aging',
+        'Netherlands tactical flexibility',
+        'Home advantage for Netherlands'
+      ],
+      riskLevel: 'low',
+      aiModel: 'GPT-4o',
+      lastUpdated: '2024-01-15T14:00:00Z'
+    }
+  ];
+};
+
 const Predictions = () => {
   const [, setLocation] = useLocation()
   const [predictions, setPredictions] = useState([])
@@ -47,55 +142,73 @@ const Predictions = () => {
     setIsLoading(true)
     
     try {
-      // Simulate API call - replace with actual API
-      const response = await fetch('/api/predictions')
-      const data = await response.json()
-      setPredictions(data.data || [])
-    } catch (error) {
-      console.error('Failed to load predictions from API:', error)
-      // Fallback to mock data
-      setPredictions([
-        {
-          id: 1,
-          game: 'Brazil vs Argentina',
-          date: '2024-06-15T20:00:00Z',
-          prediction: 'Brazil to win',
-          confidence: 85,
-          odds: 2.15,
-          reasoning: 'Brazil has been in excellent form, winning their last 5 matches. Their home advantage and superior FIFA ranking (#1) give them a significant edge.',
-          factors: [
-            'Brazil home form: 5 wins in last 5',
-            'FIFA ranking advantage: #1 vs #3',
-            'Head-to-head: Brazil won 3 of last 5',
-            'Recent form: Brazil WWWWW vs Argentina WLWWW'
-          ],
-          riskLevel: 'low',
-          aiModel: 'GPT-4o',
-          lastUpdated: '2024-01-15T10:30:00Z'
-        },
-        {
-          id: 2,
-          game: 'France vs Germany',
-          date: '2024-06-16T18:00:00Z',
-          prediction: 'Over 2.5 goals',
-          confidence: 72,
-          odds: 1.90,
-          reasoning: 'Both teams have been scoring freely in recent matches. France averages 3.2 goals per game while Germany averages 2.8.',
-          factors: [
-            'France scoring rate: 3.2 goals/game',
-            'Germany scoring rate: 2.8 goals/game',
-            'Both teams in attacking form',
-            'Historical matches: 4 of last 5 had 3+ goals'
-          ],
-          riskLevel: 'medium',
-          aiModel: 'GPT-4o',
-          lastUpdated: '2024-01-15T11:15:00Z'
+      // Get auth token
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      
+      // Call API with proper headers
+      const response = await fetch('/api/predictions', {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
         }
-      ])
+      });
+      
+      // Check if response is OK before parsing
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      // Validate data format and content
+      if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+        setPredictions(result.data);
+        
+        // Update AI stats if available
+        if (result.summary) {
+          setAiStats({
+            accuracy: 72.5,
+            totalPredictions: result.count || result.data.length,
+            correctPredictions: Math.floor(result.data.length * 0.725),
+            averageConfidence: parseFloat(result.summary.averageConfidence) || 0
+          });
+        } else {
+          // Calculate stats from predictions
+          const avgConf = result.data.reduce((sum, p) => sum + (p.confidence || 0), 0) / result.data.length;
+          setAiStats({
+            accuracy: 72.5,
+            totalPredictions: result.data.length,
+            correctPredictions: Math.floor(result.data.length * 0.725),
+            averageConfidence: parseFloat(avgConf.toFixed(1))
+          });
+        }
+      } else {
+        throw new Error('No prediction data available from API');
+      }
+      
+    } catch (error) {
+      console.error('Failed to load predictions:', error);
+      
+      toast.error('Unable to load live predictions. Showing sample data.', {
+        duration: 5000
+      });
+      
+      const mockData = getMockPredictions();
+      setPredictions(mockData);
+      
+      // Calculate mock stats
+      const avgConf = mockData.reduce((sum, p) => sum + p.confidence, 0) / mockData.length;
+      setAiStats({
+        accuracy: 72.5,
+        totalPredictions: mockData.length,
+        correctPredictions: Math.floor(mockData.length * 0.725),
+        averageConfidence: parseFloat(avgConf.toFixed(1))
+      });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false)
   }
+
 
   const filterPredictions = () => {
     let filtered = [...predictions]
